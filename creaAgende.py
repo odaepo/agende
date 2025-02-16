@@ -61,21 +61,28 @@ def main():
         giorno_sett = giorni_settimana[data_corrente.weekday()]
         # Crea la stringa sostitutiva nel formato richiesto
         nuova_stringa = f"{giorno_sett} {giorno} {mesi[mese_input]} {anno_input}"
+        
+        # Determina il file SVG da utilizzare in base al giorno della settimana
+        nome_file_svg_giorno = giorno_sett.lower().replace("'", "") + ".svg"
+        if os.path.exists(nome_file_svg_giorno):
+            nome_file_svg = nome_file_svg_giorno
+        else:
+            nome_file_svg = "a.svg"
 
-        # Leggi il contenuto del file a.svg
+        # Leggi il contenuto del file SVG selezionato
         try:
-            with open("a.svg", "r", encoding="utf-8") as file_svg:
+            with open(nome_file_svg, "r", encoding="utf-8") as file_svg:
                 contenuto_svg = file_svg.read()
         except FileNotFoundError:
-            print("Il file a.svg non è stato trovato!")
+            print(f"Il file {nome_file_svg} non è stato trovato!")
             return
 
         # Sostituisci la stringa segnaposto "Lunedi' 30 Febbraio 2025" con la stringa calcolata
         svg_modificato = contenuto_svg.replace("Lunedi' 30 Febbraio 2025", nuova_stringa)
-
+        
         # Nome del PDF temporaneo per il giorno corrente
         pdf_temp = f"temp_{giorno:02d}.pdf"
-
+        
         # Converte l'SVG modificato in PDF
         svg2pdf(bytestring=svg_modificato.encode("utf-8"), write_to=pdf_temp)
         pdf_temp_files.append(pdf_temp)
